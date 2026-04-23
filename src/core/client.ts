@@ -1,24 +1,21 @@
-import { IMedalForgeInstanceConfig, DEFAULT_CONFIG, API_ENDPOINTS } from '../core/config';
+import { BadgeForgeConfig, DEFAULT_CONFIG, API_ENDPOINTS } from '../core/config';
 import { UsersAPI } from '../api/users';
-import { MedalsAPI } from '../api/medals';
+import { BadgesAPI } from '../api/badges';
 import { EventsAPI } from '../api/events';
-import { ModalManager } from '../ui/modal';
-import { MedalViewer } from '../ui/viewer';
-import { UserMedalsAPI } from '../api/userMedals';
+import { UserBadgesAPI } from '../api/userBadges';
+import { BadgeForgeEventSlug, EventMetadata, EventResponse, EventTrackingOptions } from '../types/event';
 
 /**
  * Main SDK client class
  */
-export class MedalForgeSDK {
-  private readonly config: Required<IMedalForgeInstanceConfig>;
+export class BadgeForgeSDK {
+  private readonly config: Required<BadgeForgeConfig>;
   public readonly users: UsersAPI;
-  public readonly medals: MedalsAPI;
+  public readonly badges: BadgesAPI;
   public readonly events: EventsAPI;
-  public readonly userMedals: UserMedalsAPI;
-  public readonly modal: ModalManager;
-  public readonly viewer: MedalViewer;
+  public readonly userBadges: UserBadgesAPI;
 
-  constructor(config: IMedalForgeInstanceConfig) {
+  constructor(config: BadgeForgeConfig) {
     // Validate required configuration
     if (!config.apiKey) throw new Error('API key is required');
     if (!config.secretKey) throw new Error('Secret key is required');
@@ -27,21 +24,18 @@ export class MedalForgeSDK {
     this.config = {
       ...DEFAULT_CONFIG,
       ...config
-    } as Required<IMedalForgeInstanceConfig>;
+    } as Required<BadgeForgeConfig>;
 
     // Initialize API modules
     this.users = new UsersAPI(this);
-    this.medals = new MedalsAPI(this);
-    this.userMedals = new UserMedalsAPI(this);
+    this.badges = new BadgesAPI(this);
+    this.userBadges = new UserBadgesAPI(this);
     this.events = new EventsAPI(this);
-    this.modal = new ModalManager(this);
-    this.viewer = new MedalViewer(this);
 
     if (this.config.debug) {
-      console.log('MedalForgeStudio initialized', {
+      console.log('BadgeForgeSDK initialized', {
         environment: this.config.environment,
         endpoint: this.baseUrl,
-        autoShowModal: this.config.autoShowModal
       });
     }
   }
@@ -56,7 +50,16 @@ export class MedalForgeSDK {
   /**
    * Get current configuration
    */
-  getConfig(): Readonly<Required<IMedalForgeInstanceConfig>> {
+  getConfig(): Readonly<Required<BadgeForgeConfig>> {
     return this.config;
+  }
+
+  trackEvent(
+    eventName: BadgeForgeEventSlug,
+    userId: string,
+    metadata: EventMetadata,
+    options?: EventTrackingOptions
+  ): Promise<EventResponse> {
+    return this.events.trackEvent(eventName, userId, metadata, options);
   }
 }

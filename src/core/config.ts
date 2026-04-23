@@ -1,7 +1,7 @@
 /**
  * SDK configuration interface
  */
-export interface IMedalForgeInstanceConfig {
+export interface BadgeForgeConfig {
   /** Required API key for authentication */
   apiKey: string;
 
@@ -11,12 +11,6 @@ export interface IMedalForgeInstanceConfig {
   /** Enable debug logging */
   debug?: boolean;
 
-  /** DOM element to mount modals */
-  modalContainer?: HTMLElement;
-
-  /** Auto-show medal modal when unlocked */
-  autoShowModal?: boolean;
-
   /** API environment (default: production) */
   environment?: 'production' | 'staging' | 'development';
 }
@@ -24,18 +18,16 @@ export interface IMedalForgeInstanceConfig {
 /**
  * Default configuration values
  */
-export const DEFAULT_CONFIG: Partial<IMedalForgeInstanceConfig> = {
+export const DEFAULT_CONFIG: Partial<BadgeForgeConfig> = {
   debug: false,
-  autoShowModal: true,
   environment: 'production',
-  modalContainer: typeof document !== 'undefined' ? document.body : undefined
 };
 
 /**
  * API endpoints for different environments
  */
 export const API_ENDPOINTS = {
-  production: 'https://api.medalforge.io/',
-  staging: 'https://api.staging.medalforge.io/',
+  production: 'https://api.badgeforge.io/',
+  staging: 'https://api.staging.badgeforge.io/',
   development: 'http://localhost:8000/',
 } as const;
